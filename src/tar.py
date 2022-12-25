@@ -7,6 +7,7 @@ from machina.core.worker import Worker
 
 class Tar(Worker):
     types = ['tar']
+    next_queues = ['Identifier']
 
     def __init__(self, *args, **kwargs):
         super(Tar, self).__init__(*args, **kwargs)
@@ -34,8 +35,4 @@ class Tar(Worker):
                             "id": data['id'], #I think this is the only field needed, we can grab the unique node based on id alone
                             "type": data['type']}
                         }
-
-                channel = self.get_channel(self.config['rabbitmq'])
-                channel.basic_publish(exchange='machina',
-                    routing_key='Identifier',
-                    body=json.dumps(body))
+                self.publish_next(json.dumps(body))
